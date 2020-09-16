@@ -1,48 +1,47 @@
-import { reducer} from './store/reducers';
-import { Store } from './store/store';
-import {RemoveTodo, AddTodo } from './store/actions';
+import { reducer } from "./store/reducers";
+import { Store } from "./store/store";
+import { RemoveTodo, AddTodo } from "./store/actions";
+import { IState, ITodo } from "./store/type";
+import { renderTodos } from "./utils";
 
-import { renderTodos } from './utils';
-
-const input = document.querySelector('input'); // What would be the type of this?
-const button = document.querySelector('button') // What would be the type of this?
-const destroy = document.querySelector('.unsubscribe') // What would be the type of this?
-const todoList = document.querySelector('.todos') // What would be the type of this?
+const input: HTMLInputElement = document.querySelector("input"); // What would be the type of this?
+const button: HTMLButtonElement = document.querySelector("button"); // What would be the type of this?
+const destroy: HTMLButtonElement = document.querySelector(".unsubscribe"); // What would be the type of this?
+const todoList: HTMLUListElement = document.querySelector(".todos"); // What would be the type of this?
 
 const reducers = {
   todos: reducer,
 };
 
-
 // TODO: Store constructor should work with one argument
 const store = new Store(reducers);
 
 button.addEventListener(
-  'click',
+  "click",
   () => {
     if (!input.value.trim()) return;
 
-    const todo = { label: input.value, complete: false };
+    const todo: ITodo = { label: input.value, complete: false };
 
     store.dispatch(new AddTodo(todo));
 
-    input.value = '';
+    input.value = "";
   },
   false
 );
 
-const unsubscribe = store.subscribe(state => {
+const unsubscribe = store.subscribe((state: IState) => {
   renderTodos(state.todos.data);
 });
 
-destroy.addEventListener('click', unsubscribe, false);
+destroy.addEventListener("click", unsubscribe, false);
 
-todoList.addEventListener('click', function(event) {
-  const target = event.target; // What would the type of this?
-  if (target.nodeName.toLowerCase() === 'button') {
-    const todo = JSON.parse(target.getAttribute('data-todo') as any);
+todoList.addEventListener("click", function (event: MouseEvent) {
+  const target = event.target as HTMLUListElement; // What would be the type of this?
+  if (target.nodeName.toLowerCase() === "button") {
+    const todo = JSON.parse(target.getAttribute("data-todo") as any);
     store.dispatch(new RemoveTodo(todo));
   }
 });
 
-store.subscribe(state => console.log('STATE =>', state));
+store.subscribe((state: IState) => console.log("STATE =>", state));
